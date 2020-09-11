@@ -85,7 +85,14 @@ app.get('/signup', checkAuthenticated, (req,res)=>{
 
 app.get('/dashboard', checkNotAuthenticated, (req,res)=>{
     if(req.user.type == 1){
-        res.render('html/userdash',{ user: req.user.name, type: req.user.type})
+
+        const query = `SELECT * FROM products;`
+        pool.query(query,(err,result)=>{
+            if(err) throw err
+            // rows = result.rows
+            res.render('html/dashboard',{ user: req.user.name, type: req.user.type, data: result.rows})
+        })
+        
     }else if(req.user.type == 2){
         res.render('html/deliverydash',{ user: req.user.name, type: req.user.type})
     }else if(req.user.type == 3){
