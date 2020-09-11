@@ -1,7 +1,5 @@
 const express = require('express')
-const path = require("path");
 const cors = require("cors");
-// const { Client } = require('pg')
 const { pool } = require('./dbConfig')
 const bcrypt = require('bcrypt')
 
@@ -30,25 +28,15 @@ app.use(passport.session())
 app.use(express.static(__dirname + '/views'))
 app.set('view engine', 'ejs')
 
-// const client = new Client({
-//     user: 'sreeram',
-//     host: 'localhost',
-//     database: 'sprinkles',
-//     password: '12345',
-//     port: 5432,
-// });
-
-// client.connect();
-
 const query = `
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password VARCHAR(200) NOT NULL,
+    type SMALLINT NOT NULL,
     UNIQUE(email)
-);
-`;
+);`
 
 //creating table
 pool
@@ -59,36 +47,6 @@ pool
     .catch(err => {
         console.error(err);
     })
-    .finally(() => {
-    });
-
-//inserting rows
-// client.query(query3, (err, res) => {
-//     if (err) {
-//         console.error(err);
-//         return;
-//     }
-//     console.log('Data insert successful');
-//     client.end();
-// });
-
-// displaying all rows
-// client.query(query4, (err, res) => {
-//     if (err) {
-//         console.error(err);
-//         return;
-//     }
-//     for (let row of res.rows) {
-//         console.log(row);
-//     }
-//     client.end();
-// });
-
-//dropping a table
-// client.query(q,(err,res)=>{
-//     if(err) throw err
-//     console.log(res)
-// })
 
 app.get('/',(req,res)=>{
     res.render('html/index')
@@ -103,22 +61,29 @@ app.get('/signup', checkAuthenticated, (req,res)=>{
 })
 
 app.get('/dashboard', checkNotAuthenticated, (req,res)=>{
-    res.render('html/dashboard',{ user: req.user.name})
+    if(req.user.type == 1){
+        res.render('html/userdash',{ user: req.user.name, type: req.user.type})
+    }else if(req.user.type == 2){
+        res.render('html/deliverydash',{ user: req.user.name, type: req.user.type})
+    }else if(req.user.type == 3){
+        res.render('html/rootdash',{ user: req.user.name, type: req.user.type})
+    }
 })
 
 app.post('/signup', async (req,res)=>{
-    let { name, email, password, password2 } = req.body;
+    let { name, email, password, password2, type } = req.body;
 
     console.log({
         name,
         email,
         password,
-        password2
+        password2,
+        type
     })
 
     let errors = []
 
-    if(!name || !email || !password || !password2){
+    if(!name || !email || !password || !password2 || !type){
         errors.push({message: "Please enter all fields"})
     }
     if(password.length < 6 ){
@@ -146,9 +111,9 @@ app.post('/signup', async (req,res)=>{
                     res.render('html/signup', {errors})
                 }else{
                     pool.query(
-                        `INSERT INTO users (name,email,password)
-                        VALUES($1, $2, $3)
-                        RETURNING id, password`, [name, email, hashedPassword], (err,result)=>{
+                        `INSERT INTO users (name,email,password, type)
+                        VALUES($1, $2, $3, $4)
+                        RETURNING id, password`, [name, email, hashedPassword, type], (err,result)=>{
                             if(err) throw error
                             console.log(result)
                             req.flash('success_message', 'You are now registered, login to your account')
