@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sprinkles</title>
+  </head>
+  <body style="text-align: center">
+    <h1>Sprinkles</h1>
+
+    <ul style="list-style-type: none;">
+      <% if(messages.success_message) { %>
+      <li><%= messages.success_message %></li>
+      <% } %>
+    </ul>
+
+    <ul>
+        <% if(messages.error){ %>
+            <li><%= messages.error %></li>
+        <% } %>
+    </ul>
+
+    <form action="/login" method="POST" onsubmit="return validateLogin()">
+      <input
+        type="email"
+        placeholder="Email"
+        name="email"
+        id="email"
+        style="font-size: x-large; padding:10px;"
+        required
+      /> <br><br>
+      <input
+        type="password"
+        placeholder="Password"
+        id="password"
+        name="password"
+        style="font-size: x-large; padding:10px;"
+        required
+      /> <br><br>
+      <button type="submit" value='login' style="padding: 10px; font-size:larger">Login</button>
+    </form>
+
+    <p style="font-size: large;"><a href="/signup">Already registered? Log in here</a></p>
+  </body>
+
+  
+</html>

@@ -5,6 +5,10 @@ const { Client } = require('pg')
 const { pool } = require('./dbConfig')
 const bcrypt = require('bcrypt')
 
+const passport = require('passport')
+
+const initialize = require('./passport-config')
+initialize(passport)
 const session = require('express-session')
 const flash = require('express-flash')
 
@@ -19,6 +23,9 @@ app.use(session({
     saveUninitialized: false,
 }))
 app.use(flash())
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(express.static(__dirname + '/views'))
 app.set('view engine', 'ejs')
@@ -97,17 +104,20 @@ client
 //     console.log(res)
 // })
 
-
-app.get('/login',(req,res)=>{
+app.get('/',(req,res)=>{
     res.render('html/index')
 })
 
-app.get('/signup',(req,res)=>{
+app.get('/login', checkAuthenticated, (req,res)=>{
+    res.render('html/login')
+})
+
+app.get('/signup', checkAuthenticated, (req,res)=>{
     res.render('html/signup')
 })
 
-app.get('/dashboard',(req,res)=>{
-    res.render('html/dashboard',{ user: "Sreeram"})
+app.get('/dashboard', checkNotAuthenticated, (req,res)=>{
+    res.render('html/dashboard',{ user: req.user.name})
 })
 
 app.post('/signup', async (req,res)=>{
@@ -155,9 +165,8 @@ app.post('/signup', async (req,res)=>{
                         RETURNING id, password`, [name, email, hashedPassword], (err,result)=>{
                             if(err) throw error
                             console.log(result)
-                            // req.flash('success-message', 'You are now registered, login to your account')
-                            const expressFlash = "You are now registered, login to your account"
-                            res.render('html/index',{ expressFlash })
+                            req.flash('success_message', 'You are now registered, login to your account')
+                            res.redirect('/login')
                         }
                     )
                 }
@@ -165,6 +174,32 @@ app.post('/signup', async (req,res)=>{
         )
     }
 })
+
+app.post('/login',passport.authenticate('local',{
+    successRedirect: '/dashboard',
+    failureRedirect: '/login',
+    failureFlash: true
+}))
+
+app.get('/logout',(req,res)=>{
+    req.logOut()
+    req.flash('success_message','You have successfully logged out')
+    res.redirect('/login')
+})
+
+function checkAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        return res.redirect('/dashboard')
+    }
+    next()
+}
+
+function checkNotAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        return next()
+    }
+    res.redirect('/login')
+}
 
 const PORT = process.env.PORT || 3000
 
