@@ -10,17 +10,17 @@
 
     <ul style="list-style-type: none;">
       <% if(messages.success_message) { %>
-      <li><%= messages.success_message %></li>
+        <li><%= messages.success_message %></li>
       <% } %>
     </ul>
 
-    <ul>
+    <ul style="list-style-type: none;">
         <% if(messages.error){ %>
             <li><%= messages.error %></li>
         <% } %>
     </ul>
 
-    <form action="/login" method="POST" onsubmit="return validateLogin()">
+    <form action="/login" method="POST">
       <input
         type="email"
         placeholder="Email"

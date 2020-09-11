@@ -8,7 +8,7 @@
   <body style="text-align: center">
     <h1>Sprinkles</h1>
 
-    <ul>
+    <ul style="list-style-type: none;">
         <% if(typeof(errors) != 'undefined') { %>
             <% errors.forEach(error=>{ %>
                 <li> <%= error.message %></li>
@@ -16,7 +16,7 @@
         <% } %>
     </ul>
 
-    <form action="/signup" method="POST" onsubmit="return validateLogin()">
+    <form action="/signup" method="POST">
       <input
         type="text"
         placeholder="Name"
@@ -25,6 +25,11 @@
         style="font-size: x-large; padding:10px;"
         required
       /> <br><br>
+      <select name="address" id="address" style="font-size: x-large; padding:10px;">
+        <option value="indiranagar">Indiranagar</option>
+        <option value="koramangala">Koramangala</option>
+        <option value="jayanagar">Jayanagar</option>
+    </select> <br><br>
       <input
         type="email"
         placeholder="Email"

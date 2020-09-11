@@ -28,25 +28,48 @@ app.use(passport.session())
 app.use(express.static(__dirname + '/views'))
 app.set('view engine', 'ejs')
 
-const query = `
+const usersTableQuery = `
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    address VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password VARCHAR(200) NOT NULL,
     type SMALLINT NOT NULL,
     UNIQUE(email)
 );`
 
-//creating table
+const productsTableQuery = `
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description VARCHAR(100) NOT NULL,
+    price NUMERIC(5,2) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    UNIQUE(name)
+);`
+
+//creating users table
 pool
-    .query(query)
+    .query(usersTableQuery)
     .then(res => {
-        console.log('Table is successfully created');
+        console.log('Users table successfully created');
     })
     .catch(err => {
         console.error(err);
     })
+
+//creating products table
+pool
+    .query(productsTableQuery)
+    .then(res => {
+        console.log('Products table successfully created');
+    })
+    .catch(err => {
+        console.error(err);
+    })
+
+
 
 app.get('/',(req,res)=>{
     res.render('html/index')
@@ -71,10 +94,11 @@ app.get('/dashboard', checkNotAuthenticated, (req,res)=>{
 })
 
 app.post('/signup', async (req,res)=>{
-    let { name, email, password, password2, type } = req.body;
+    let { name, address, email, password, password2, type } = req.body;
 
     console.log({
         name,
+        address,
         email,
         password,
         password2,
@@ -83,7 +107,7 @@ app.post('/signup', async (req,res)=>{
 
     let errors = []
 
-    if(!name || !email || !password || !password2 || !type){
+    if(!name || !address || !email || !password || !password2 || !type){
         errors.push({message: "Please enter all fields"})
     }
     if(password.length < 6 ){
@@ -111,10 +135,10 @@ app.post('/signup', async (req,res)=>{
                     res.render('html/signup', {errors})
                 }else{
                     pool.query(
-                        `INSERT INTO users (name,email,password, type)
-                        VALUES($1, $2, $3, $4)
-                        RETURNING id, password`, [name, email, hashedPassword, type], (err,result)=>{
-                            if(err) throw error
+                        `INSERT INTO users (name,address,email,password, type)
+                        VALUES($1, $2, $3, $4, $5)
+                        RETURNING id, password`, [name, address, email, hashedPassword, type], (err,result)=>{
+                            if(err) throw err
                             console.log(result)
                             req.flash('success_message', 'You are now registered, login to your account')
                             res.redirect('/login')
@@ -124,6 +148,55 @@ app.post('/signup', async (req,res)=>{
             }
         )
     }
+})
+
+app.post('/dashboard/createpost',(req,res)=>{
+    let {name, description, price, category} = req.body
+    console.log({
+        name,
+        description,
+        price,
+        category
+    })
+    
+    let errors = []
+
+    if(!name || !description || !price || !category){
+        errors.push({message: "Enter all fields"})
+    }
+    if(price <= 0){
+        errors.push({message: "Please enter a valid price"})
+    }
+    if(errors.length > 0){
+        res.render('html/rootdash',{ errors })
+    }else{
+
+        pool.query(
+            `SELECT * FROM products
+            WHERE name = $1`, [name], (err,result) => {
+                if(err) throw err
+                console.log(result.rows)
+
+                if(result.rows.length > 0){
+                    errors.push({ message: "Product already added"})
+                    res.render('html/rootdash', {errors})
+                }else{
+                    pool.query(
+                        `INSERT INTO products (name,description,price,category)
+                        VALUES($1, $2, $3, $4)
+                        RETURNING id`, [name, description, price, category], (err,result)=>{
+                            if(err) throw err
+                            console.log(result)
+                            req.flash('success_message', 'Successfully added product!')
+                            res.redirect('/dashboard')
+                        }
+                    )
+                }
+            }
+        )
+
+    }
+
 })
 
 app.post('/login',passport.authenticate('local',{
