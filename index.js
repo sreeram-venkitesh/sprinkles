@@ -50,19 +50,6 @@ CREATE TABLE users (
 );
 `;
 
-const query3 = `
-INSERT INTO users (email, firstName, lastName, age)
-VALUES ('sreeram@gmail.com', 'sreeram', 'venkitesh', 21)
-`;
-
-const query4 = `
-SELECT *
-FROM users
-`;
-
-
-const q = `DROP TABLE users`
-
 //creating table
 client
     .query(query)
