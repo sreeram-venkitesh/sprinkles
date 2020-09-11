@@ -32,7 +32,7 @@ app.set('view engine', 'ejs')
 
 const client = new Client({
     user: 'sreeram',
-    host: 'localhost',
+    host: process.env.NODE_ENV,
     database: 'sprinkles',
     password: '12345',
     port: 5432,
