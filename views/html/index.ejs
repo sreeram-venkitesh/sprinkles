@@ -8,6 +8,13 @@
   <body style="text-align: center">
     <h1>Sprinkles</h1>
 
+    <ul style="list-style-type: none;">
+    <% if(expressFlash != 'undefined') { %>
+        <li>You are now registered, login to your account</li>
+    
+    <% } %>
+    </ul>
+
     <form action="/login" method="POST" onsubmit="return validateLogin()">
       <input
         type="email"
@@ -30,4 +37,6 @@
 
     <p style="font-size: large;"><a href="/signup">Already registered? Log in here</a></p>
   </body>
+
+  
 </html>
