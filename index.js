@@ -1,7 +1,7 @@
 const express = require('express')
 const path = require("path");
 const cors = require("cors");
-const { Client } = require('pg')
+// const { Client } = require('pg')
 const { pool } = require('./dbConfig')
 const bcrypt = require('bcrypt')
 
@@ -30,15 +30,15 @@ app.use(passport.session())
 app.use(express.static(__dirname + '/views'))
 app.set('view engine', 'ejs')
 
-const client = new Client({
-    user: 'sreeram',
-    host: 'localhost',
-    database: 'sprinkles',
-    password: '12345',
-    port: 5432,
-});
+// const client = new Client({
+//     user: 'sreeram',
+//     host: 'localhost',
+//     database: 'sprinkles',
+//     password: '12345',
+//     port: 5432,
+// });
 
-client.connect();
+// client.connect();
 
 const query = `
 CREATE TABLE users (
@@ -51,7 +51,7 @@ CREATE TABLE users (
 `;
 
 //creating table
-client
+pool
     .query(query)
     .then(res => {
         console.log('Table is successfully created');
@@ -60,7 +60,6 @@ client
         console.error(err);
     })
     .finally(() => {
-        client.end();
     });
 
 //inserting rows
