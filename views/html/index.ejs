@@ -8,20 +8,26 @@
   <body style="text-align: center">
     <h1>Sprinkles</h1>
 
-    <form action="/" method="POST" onsubmit="return validateLogin()">
+    <form action="/login" method="POST" onsubmit="return validateLogin()">
       <input
-        type="text"
-        placeholder="Name"
-        id="fullname"
+        type="email"
+        placeholder="Email"
+        name="email"
+        id="email"
         style="font-size: x-large; padding:10px;"
+        required
       /> <br><br>
       <input
         type="password"
         placeholder="Password"
-        id="fullname"
+        id="password"
+        name="password"
         style="font-size: x-large; padding:10px;"
+        required
       /> <br><br>
-      <button type="submit" style="padding: 10px; font-size:larger">Login</button>
+      <button type="submit" value='login' style="padding: 10px; font-size:larger">Login</button>
     </form>
+
+    <p style="font-size: large;"><a href="/signup">Already registered? Log in here</a></p>
   </body>
 </html>
