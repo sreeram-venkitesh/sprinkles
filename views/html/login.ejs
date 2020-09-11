@@ -3,44 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <title>Sprinkles</title>
-  </head>
-  <body style="text-align: center">
-    <h1>Sprinkles</h1>
+  </head> 
+  <body style="padding:20px;">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a href="/">
+          <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
+        </a>
+  
+      </div>
+    
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <a class="button is-danger is-large" href="/"> 
+                <strong>Home</strong>
+              </a>
+              <a class="button is-light is-large" href='/signup'>
+                Sign up
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
 
-    <ul style="list-style-type: none;">
-      <% if(messages.success_message) { %>
-        <li><%= messages.success_message %></li>
-      <% } %>
-    </ul>
+    <br>
+    <section class="hero" style="width: 60%; margin-left:auto; margin-right:auto; border:2px; border-style:solid; border-color:#333; border-radius:10px;">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+            <div style="text-align: center; ">
+              <h1 class="subtitle is-2">Log in</h1>
+              
+              <ul style="list-style-type: none;">
+                <% if(messages.success_message) { %>
+                  <li><%= messages.success_message %></li>
+                <% } %>
+              </ul>
+          
+              <ul style="list-style-type: none;">
+                  <% if(messages.error){ %>
+                      <li><%= messages.error %></li>
+                  <% } %>
+              </ul>
+          
+              <form action="/login" method="POST">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                  id="email"
+                  style="font-size: x-large; padding:10px; margin:5px;"
+                  required
+                /> <br>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  id="password"
+                  name="password"
+                  style="font-size: x-large; padding:10px; margin:5px;"
+                  required
+                /> <br>
+                <button class="button is-light" type="submit" value='login' style="padding: 10px; margin:10px; font-size:larger">Login</button>
+              </form>
+           <br>
+              <p style="font-size: large;"><a href="/signup">Don't have an account? Sign up here</a></p>
+             
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <ul style="list-style-type: none;">
-        <% if(messages.error){ %>
-            <li><%= messages.error %></li>
-        <% } %>
-    </ul>
 
-    <form action="/login" method="POST">
-      <input
-        type="email"
-        placeholder="Email"
-        name="email"
-        id="email"
-        style="font-size: x-large; padding:10px;"
-        required
-      /> <br><br>
-      <input
-        type="password"
-        placeholder="Password"
-        id="password"
-        name="password"
-        style="font-size: x-large; padding:10px;"
-        required
-      /> <br><br>
-      <button type="submit" value='login' style="padding: 10px; font-size:larger">Login</button>
-    </form>
-
-    <p style="font-size: large;"><a href="/signup">Already registered? Log in here</a></p>
+    
   </body>
 
   
