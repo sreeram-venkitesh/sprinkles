@@ -1,15 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" 
       type="image/png" 
       size="16x16"
       href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png">
-    <title>Document</title>
-</head>
-<body>
+    <title>Sprinkles</title>
+  </head>
+  <body style="padding:20px;">
     
-</body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a href="/">
+          <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
+        </a>
+  
+      </div>
+    
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <a class="button is-danger is-large" href="/dashboard/orders"> 
+                <strong>Your Orders</strong>
+              </a>
+              <a class="button is-light is-large" href='/logout'>
+                Log out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <h1 class="subtitle is-3" style="margin-left: 50px; margin-top:20px; margin-bottom:0px;">Hello <%= user %>! 
+      <br> You can see orders made by people in your location here 
+      <br> You can take up deliveries based on where you are and set an estimated time of arrival
+      <br> This will notify the customer who made the order and you will also get their contact.</h1>
+    <br>
+    <ul style="list-style-type: none; margin-left:50px;">
+      <% if(messages.success_message) { %>
+        <li><%= messages.success_message %></li>
+      <% } %>
+    </ul>
+    <br>
+    <hr>
+    <p class="subtitle is-3" style="margin-left:30px ;">Available orders</p>
+    <div id='productcards' style='display: block; padding:20px;'>
+      <% if(eligibleOrders.length != 0) { %> 
+        <% eligibleOrders.forEach(item=>{ %>
+            <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
+              <div style="margin: 20px;">
+                  <p class="subtitle is-3" style="margin-bottom: 5px; color:#000"><%= item.productname %></p>
+                  <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Quantity : <%= item.quantity %> </p>
+                  <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Total Price : <%= item.productprice %> x <%= item.quantity %> = <%= item.total %> ₹ </p>
+              </div>
+              <div style="margin: 20px;">
+                  <p id='deliverystatus' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery status : <%= item.dispatchstatus  %> </p>
+                  <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Customer : <%= item.customer  %> </p>
+                  <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Recieved :  <%= item.deliveredstatus %>  </p>
+              </div>
+              <div style="margin: 20px; display:block;">
+                <form action="/dashboard/deliverydash" method="POST">
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="Estimated Time of Arrival"
+                    id="eta"
+                    name="eta"
+                    style="font-size: x-large; padding:10px;"
+                    required
+                  /> <br>
+                  <button class="button is-warning" type="submit" value='register' style="padding: 10px; font-size:larger; margin-top:10px;">Claim Order!</button>
+                  <input type="text" style="display: none;" name="orderid" value="<%= item.id  %> ">
+                </form>
+              </div>
+            </div>
+        <% }) %> 
+      <%} else { %>
+          <p class="subtitle is-2" style="margin-left:30px ;">There are no unclaimed orders near your location!</p>
+      <% } %>
+  </div>
+  <hr>
+  <p class="subtitle is-3" style="margin-left:30px ;">Your orders</p>
+  <div id='productcards' style='display: block; padding:20px;'>
+    <% if(yourOrders.length != 0) { %> 
+      <% yourOrders.forEach(item=>{ %>
+          <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
+            <div style="margin: 20px;">
+                <p class="subtitle is-3" style="margin-bottom: 5px; color:#000"><%= item.productname %></p>
+                <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Quantity : <%= item.quantity %> </p>
+                <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Total Price : <%= item.productprice %> x <%= item.quantity %> = <%= item.total %> ₹ </p>
+            </div>
+            <div style="margin: 20px;">
+                <p id='deliverystatus' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery status : <%= item.dispatchstatus  %> </p>
+                <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Customer : <%= item.customer  %> </p>
+                <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Recieved :  <%= item.deliveredstatus %>  </p>
+            </div>
+            <div style="margin: 20px; display:block;">
+              <form action="/dashboard/delivered" method="POST">
+                <button class="button is-warning" type="submit" value='register' style="padding: 10px; font-size:larger; margin-top:10px;">Mark delivered!</button>
+                <input type="text" style="display: none;" name="orderid" value="<%= item.id  %> ">
+              </form>
+            </div>
+          </div>
+      <% }) %> 
+    <%} else { %>
+        <p class="subtitle is-2" style="margin-left:30px ;">You dont have any pending deliveries!</p>
+    <% } %>
+</div>
+
+
+
+    <script>
+     
+    </script>
+  </body>
 </html>

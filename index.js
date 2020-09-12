@@ -120,10 +120,27 @@ app.get("/dashboard", checkNotAuthenticated, (req, res) => {
       });
     });
   } else if (req.user.type == 2) {
-    res.render("html/deliverydash", {
-      user: req.user.name,
-      type: req.user.type,
-    });
+    pool.query(
+      `SELECT * FROM orders WHERE address = $1`,
+      [req.user.address],
+      (err, result) => {
+        if (err) throw err;
+        const eligibleOrders = result.rows.filter(
+          (order) => order.dispatchstatus == "Not Picked Up"
+        );
+        const yourOrders = result.rows.filter(
+          (order) =>
+            order.deliveryid == req.user.id &&
+            order.dispatchstatus != "Delivered"
+        );
+        res.render("html/deliverydash", {
+          user: req.user.name,
+          type: req.user.type,
+          eligibleOrders: eligibleOrders,
+          yourOrders: yourOrders,
+        });
+      }
+    );
   } else if (req.user.type == 3) {
     res.render("html/rootdash", {
       user: req.user.name,
@@ -298,10 +315,42 @@ app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
     `SELECT * FROM orders WHERE customer = $1`,
     [req.user.name],
     (err, result) => {
+      const currentOrders = result.rows.filter(
+        (order) => order.dispatchstatus != "Delivered"
+      );
+
+      const pastOrders = result.rows.filter(
+        (order) => order.dispatchstatus == "Delivered"
+      );
+
       console.log(result.rows);
-      res.render('html/orders',{data:result.rows, user:req.user});
+      res.render("html/orders", { data: result.rows, user: req.user, currentOrders:currentOrders, pastOrders:pastOrders });
     }
   );
+});
+
+app.post("/dashboard/deliverydash", (req, res) => {
+  console.log(req.body);
+  console.log(req.user.id);
+
+  pool.query(`UPDATE orders
+  SET dispatchstatus='Dispatched',
+  deliveryid='${req.user.id}',
+  eta='${req.body.eta}'
+  WHERE id='${req.body.orderid}'
+  RETURNING id;`);
+  res.redirect("/dashboard");
+});
+
+app.post("/dashboard/delivered", (req, res) => {
+  console.log(req.body.orderid);
+  console.log(req.user.id);
+
+  pool.query(`UPDATE orders
+  SET dispatchstatus='Delivered',
+  deliveredstatus='TRUE'
+  WHERE id='${req.body.orderid}'`);
+  res.redirect("/dashboard");
 });
 
 app.post(
