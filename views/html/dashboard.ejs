@@ -41,6 +41,12 @@
 
     <h1 class="subtitle is-3" style="margin-left: 50px; margin-top:20px; margin-bottom:0px;">Hello <%= user %>! Here are the currently available items <br> Click on a card to see more info</h1>
     <br>
+    <ul style="list-style-type: none; margin-left:50px;">
+      <% if(messages.success_message) { %>
+        <li><%= messages.success_message %></li>
+      <% } %>
+    </ul>
+    <br>
     <div id='productcards' style='display: flex; padding:20px;'>
         <% if(typeof(data) != 'undefined') { %> 
           <% data.forEach(item=>{ %>

@@ -51,6 +51,19 @@ CREATE TABLE products (
     UNIQUE(name)
 );`;
 
+const ordersTableQuery = `
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  productname VARCHAR(100) NOT NULL,
+  quantity SMALLINT NOT NULL,
+  customer VARCHAR(100) NOT NULL,
+  address VARCHAR(100) NOT NULL,
+  productprice NUMERIC(5,2) NOT NULL,
+  total NUMERIC(5,2) NOT NULL,
+  deliveryId SMALLINT DEFAULT NULL,
+  deliveredStatus BOOLEAN DEFAULT FALSE
+);`;
+
 //creating users table
 pool
   .query(usersTableQuery)
@@ -64,6 +77,15 @@ pool
 //creating products table
 pool
   .query(productsTableQuery)
+  .then((res) => {
+    console.log("Products table successfully created");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+pool
+  .query(ordersTableQuery)
   .then((res) => {
     console.log("Products table successfully created");
   })
@@ -226,30 +248,48 @@ app.post("/dashboard/createpost", (req, res) => {
 
 app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
   console.log(req.params.id);
-  let product
+  let product;
   pool.query(
     `SELECT * FROM products WHERE id = $1`,
     [req.params.id],
     (err, result) => {
       if (err) throw err;
-      product = result.rows[0]
-      res.render("html/product",{ product:product, user:req.user });
+      product = result.rows[0];
+      res.render("html/product", { product: product, user: req.user });
     }
   );
 });
 
-
-app.post('/dashboard/products', (req,res)=>{
-  let { qty, productname, username, useraddress, productprice, total } = req.body
+app.post("/dashboard/products", (req, res) => {
+  let {
+    qty,
+    productname,
+    username,
+    useraddress,
+    productprice,
+    total,
+  } = req.body;
   console.log({
-    qty:qty,
-    productname:productname,
-    username:username,
-    useraddress:useraddress,
-    productprice:productprice,
-    total:total
-  })
-})
+    qty: qty,
+    productname: productname,
+    username: username,
+    useraddress: useraddress,
+    productprice: productprice,
+    total: total,
+  });
+
+  pool.query(
+    `INSERT INTO orders (productname, quantity, customer, address, productprice, total)
+              VALUES ($1, $2, $3, $4, $5, $6) RETURNING id `,
+    [productname, qty, username, useraddress, productprice, total],
+    (err, result) => {
+      if(err) throw err
+      console.log(result.rows)
+      req.flash("success_message", `Successfully ordered ${productname}`);
+      res.redirect("/dashboard");
+    }
+  );
+});
 
 app.post(
   "/login",
