@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" 
+      type="image/png" 
+      size="16x16"
+      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png">
+    <title>Sprinkles</title>
+  </head>
+  <body style="padding:20px;">
+    
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a href="/">
+          <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
+        </a>
+  
+      </div>
+    
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <a class="button is-danger is-large" href="/dashboard"> 
+                <strong>Dashboard</strong>
+              </a>
+              <a class="button is-light is-large" href='/logout'>
+                Log out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <h1 class="subtitle is-3" style="margin-left: 50px; margin-top:20px; margin-bottom:0px;">Hello <%= user.name %>! Here are your orders</h1>
+    <br>
+    <ul style="list-style-type: none; margin-left:50px;">
+      <% if(messages.success_message) { %>
+        <li><%= messages.success_message %></li>
+      <% } %>
+    </ul>
+    <br>
+    <div id='productcards' style='display: block; padding:20px;'>
+        <% if(typeof(data) != 'undefined') { %> 
+          <% data.forEach(item=>{ %>
+              <div  class="ordercard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
+                <div>
+                    <p class="subtitle is-3" style="margin-bottom: 5px; color:#000"><%= item.productname %></p>
+                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Quantity : <%= item.quantity %> </p>
+                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Total Price : <%= item.productprice %> x <%= item.quantity %> = <%= item.total %> ₹ </p>
+                </div>
+                <div style=" margin-right:300; margin-left:auto;">
+                    <p id='deliverystatus' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery status : <%= item.dispatchstatus  %> </p>
+                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> ETA : 2 hours </p>
+                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Recieved :  <%= item.deliveredstatus %>  </p>
+                </div>
+
+              </div>
+          <% }) %> 
+        <% } %>
+    </div>
+
+
+    <script>
+      
+
+     
+    </script>
+  </body>
+</html>

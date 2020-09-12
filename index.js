@@ -61,7 +61,9 @@ CREATE TABLE orders (
   productprice NUMERIC(5,2) NOT NULL,
   total NUMERIC(5,2) NOT NULL,
   deliveryId SMALLINT DEFAULT NULL,
-  deliveredStatus BOOLEAN DEFAULT FALSE
+  dispatchStatus VARCHAR(20) DEFAULT 'Not Picked Up',
+  deliveredStatus BOOLEAN DEFAULT FALSE,
+  eta VARCHAR(20) DEFAULT '2 HOURS'
 );`;
 
 //creating users table
@@ -283,10 +285,21 @@ app.post("/dashboard/products", (req, res) => {
               VALUES ($1, $2, $3, $4, $5, $6) RETURNING id `,
     [productname, qty, username, useraddress, productprice, total],
     (err, result) => {
-      if(err) throw err
-      console.log(result.rows)
+      if (err) throw err;
+      console.log(result.rows);
       req.flash("success_message", `Successfully ordered ${productname}`);
-      res.redirect("/dashboard");
+      res.redirect("/dashboard/orders");
+    }
+  );
+});
+
+app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
+  pool.query(
+    `SELECT * FROM orders WHERE customer = $1`,
+    [req.user.name],
+    (err, result) => {
+      console.log(result.rows);
+      res.render('html/orders',{data:result.rows, user:req.user});
     }
   );
 });
