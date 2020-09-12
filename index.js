@@ -101,7 +101,10 @@ app.get("/dashboard", checkNotAuthenticated, (req, res) => {
       type: req.user.type,
     });
   } else if (req.user.type == 3) {
-    res.render("html/rootdash", { user: req.user.name, type: req.user.type });
+    res.render("html/rootdash", {
+      user: req.user.name,
+      type: req.user.type,
+    });
   }
 });
 
@@ -123,7 +126,9 @@ app.post("/signup", async (req, res) => {
     errors.push({ message: "Please enter all fields" });
   }
   if (password.length < 6) {
-    errors.push({ message: "Password should atleast be 6 characters long" });
+    errors.push({
+      message: "Password should atleast be 6 characters long",
+    });
   }
   if (password != password2) {
     errors.push({ message: "Passwords do not match" });

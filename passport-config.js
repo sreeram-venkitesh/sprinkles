@@ -14,7 +14,7 @@ function initialize(passport) {
         if (err) {
           throw err;
         }
-        console.log(results.rows);
+        console.log(results.rows);                          
 
         if (results.rows.length > 0) {
           const user = results.rows[0];
@@ -27,13 +27,15 @@ function initialize(passport) {
               return done(null, user);
             } else {
               //password is incorrect
-              return done(null, false, { message: "Password is incorrect" });
+              return done(null, false, {
+                message: "Password is incorrect",
+              });
             }
           });
         } else {
           // No user
           return done(null, false, {
-            message: "No user with that email address"
+            message: "No user with that email address",
           });
         }
       }
