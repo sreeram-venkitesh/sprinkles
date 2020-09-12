@@ -224,6 +224,33 @@ app.post("/dashboard/createpost", (req, res) => {
   }
 });
 
+app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
+  console.log(req.params.id);
+  let product
+  pool.query(
+    `SELECT * FROM products WHERE id = $1`,
+    [req.params.id],
+    (err, result) => {
+      if (err) throw err;
+      product = result.rows[0]
+      res.render("html/product",{ product:product, user:req.user });
+    }
+  );
+});
+
+
+app.post('/dashboard/products', (req,res)=>{
+  let { qty, productname, username, useraddress, productprice, total } = req.body
+  console.log({
+    qty:qty,
+    productname:productname,
+    username:username,
+    useraddress:useraddress,
+    productprice:productprice,
+    total:total
+  })
+})
+
 app.post(
   "/login",
   passport.authenticate("local", {

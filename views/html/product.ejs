@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" 
+      type="image/png" 
+      size="16x16"
+      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png">
+    <title>Sprinkles</title>
+</head>
+<body style="padding:20px;">
+
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a href="/">
+            <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
+          </a>
+    
+        </div>
+      
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <p class="subtitle is-4" style="vertical-align:middle; margin-right: 20px;">
+                    Logged in as <%= user.email  %>
+                </p>
+                <a class="button is-danger is-large" href="/dashboard/orders"> 
+                  <strong>Your Orders</strong>
+                </a>
+                <a class="button is-light is-large" href='/dashboard'>
+                   See Products 
+                  </a>
+                <a class="button is-light is-large" href='/logout'>
+                  Log out
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+
+      <div style="display: flex;">
+        <div style="margin-left:100px; margin-top:30px; float:left; width:50%;">
+            <h1 class="title is-1"><%= product.name  %></h1>
+            <h1 class="subtitle is-1"><%= product.description  %></h1>
+            <h1 id='total' class="subtitle is-2"><%= product.price  %> ₹</h1>
+
+            <form action="/dashboard/products" method="POST">
+                <input type="number" id="qty" style="font-size: x-large; padding:10px; width:250px;" placeholder="Quantity" name="qty" min="1" max="10"><br>
+                <button class="button is-warning is-large" type="submit" style="margin-top: 10px;">Place Order!</button>
+                <input type="text" name="productname" style="visibility:hidden" value="<%= product.name %>"><br>
+                <input type="text" name="username"  style="visibility:hidden" value="<%= user.name %>"><br>
+                <input type="text" name="useraddress" style="visibility:hidden" value="<%= user.address %>"><br>
+                <input type="number" name="productprice"  style="visibility:hidden" value="<%= product.price %>"><br>
+                <input type="text" name="total" id='totalPrice' style="visibility:hidden" value="0"><br>
+            </form>
+        </div>
+
+        <div style="margin-right:100px; margin-top:30px; float:right; width:50%;">
+            <img src="https://classiccake.com/wp-content/uploads/2018/05/Classiccake-Cookies.jpg" alt="cookies" width='70%'>
+        </div>
+      </div>
+     
+      
+    
+      <script>
+          console.log('<%= product %>')
+
+          const total = document.getElementById('total')
+          const qty = document.getElementById('qty')
+          const totalPriceForDB = document.getElementById('totalPrice')
+
+          qty.addEventListener('input',()=>{
+            const totalPrice = total.innerText.split(' ')[0] * qty.value
+            total.innerText = `<%= product.price  %> x ${qty.value} = ${totalPrice} ₹`
+            totalPriceForDB.value = totalPrice
+          })
+           
+      </script>
+</body>
+</html>
