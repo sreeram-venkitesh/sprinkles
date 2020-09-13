@@ -56,7 +56,33 @@
         <% } %>
     </ul>
     <br>
-    <%= users  %>
+    <div id='productcards' style='display: block; padding:20px;'>
+        <% if(users.length != 0) { %> 
+          <% users.forEach(item=>{ %>
+              <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
+                <div style="margin: 20px;">
+                    <p class="subtitle is-3" style="margin-bottom: 5px; color:#000">Name: <%= item.name %></p>
+                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Email : <%= item.email %> </p>
+                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Address : <%= item.address %></p>
+                </div>
+                <div style="margin: 20px;">
+                    <% if(item.type == 1) { %>
+                        <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Account Type : Customer </p>
+                    <% } else if(item.type == 2){ %>
+                        <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Account Type : Delivery </p>
+                    <% } else if(item.type == 3) { %>
+                        <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Account Type : Admin </p>
+                    <% } %>
+                </div>
+                <div style="margin: 20px; display:block;">
+                  
+                </div>
+              </div>
+          <% }) %> 
+        <%} else { %>
+            <p class="subtitle is-2" style="margin-left:30px ;">There are no unclaimed orders near your location!</p>
+        <% } %>
+    </div>
 
     <br>
     

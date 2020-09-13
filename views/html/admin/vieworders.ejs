@@ -56,7 +56,30 @@
         <% } %>
     </ul>
     <br>
-    <%= orders  %>
+    <div id='productcards' style='display: block; padding:20px;'>
+        <% if(orders.length != 0) { %> 
+          <% orders.forEach(item=>{ %>
+              <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
+                <div style="margin: 20px;">
+                    <p class="subtitle is-3" style="margin-bottom: 5px; color:#000"><%= item.productname %></p>
+                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Quantity : <%= item.quantity %> </p>
+                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Total Price : <%= item.productprice %> x <%= item.quantity %> = <%= item.total %> ₹ </p>
+                </div>
+                <div style="margin: 20px;">
+                    <p id='deliverystatus' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery status : <%= item.dispatchstatus  %> </p>
+                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Customer : <%= item.customer  %> </p>
+                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery : <%= item.deliveryname  %> </p>
+                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Recieved :  <%= item.deliveredstatus %>  </p>
+                </div>
+                <div style="margin: 20px; display:block;">
+                  
+                </div>
+              </div>
+          <% }) %> 
+        <%} else { %>
+            <p class="subtitle is-2" style="margin-left:30px ;">There are no unclaimed orders near your location!</p>
+        <% } %>
+    </div>
 
     <br>
     

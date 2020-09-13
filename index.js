@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS orders (
   productprice NUMERIC(5,2) NOT NULL,
   total NUMERIC(5,2) NOT NULL,
   deliveryId SMALLINT DEFAULT NULL,
+  deliveryName VARCHAR(20) DEFAULT NULL,
   dispatchStatus VARCHAR(20) DEFAULT 'Not Picked Up',
   deliveredStatus BOOLEAN DEFAULT FALSE,
   eta VARCHAR(20) DEFAULT '2 HOURS'
@@ -384,6 +385,7 @@ app.post("/dashboard/deliverydash", (req, res) => {
   pool.query(`UPDATE orders
   SET dispatchstatus='Dispatched',
   deliveryid='${req.user.id}',
+  deliveryname='${req.user.name}',
   eta='${req.body.eta}'
   WHERE id='${req.body.orderid}'
   RETURNING id;`);
