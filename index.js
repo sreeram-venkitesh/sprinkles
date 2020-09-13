@@ -1,17 +1,18 @@
 const express = require("express");
 const cors = require("cors");
-const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
-
 const passport = require("passport");
-
-const initialize = require("./passport-config");
-initialize(passport);
 const session = require("express-session");
 const flash = require("express-flash");
 
+const { pool } = require("./dbConfig");
+const initialize = require("./passport-config");
+initialize(passport);
+
+
 const app = express();
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -23,13 +24,14 @@ app.use(
   })
 );
 app.use(flash());
-
 app.use(passport.initialize());
 app.use(passport.session());
 
+//Seting static directory and view engine
 app.use(express.static(__dirname + "/views"));
 app.set("view engine", "ejs");
 
+// Postgresql queries for creatin user, product and orders table 
 const usersTableQuery = `
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -67,8 +69,11 @@ CREATE TABLE IF NOT EXISTS orders (
   eta VARCHAR(20) DEFAULT '2'
 );`;
 
-//creating users table
+// These blocks of code below will be run only the first time
+// the app is run locally/in the server to create the tables
+// in the database
 
+//creating users table
 pool
   .query(usersTableQuery)
   .then((res) => {
@@ -88,6 +93,7 @@ pool
     console.error(err);
   });
 
+  //creating orders table
 pool
   .query(ordersTableQuery)
   .then((res) => {
@@ -97,6 +103,7 @@ pool
     console.error(err);
   });
 
+//Rendering the pages which does not require authentication
 app.get("/", (req, res) => {
   res.render("html/index");
 });
@@ -109,48 +116,7 @@ app.get("/signup", checkAuthenticated, (req, res) => {
   res.render("html/signup");
 });
 
-app.get("/dashboard", checkNotAuthenticated, (req, res) => {
-  if (req.user.type == 1) {
-    const query = `SELECT * FROM products;`;
-    pool.query(query, (err, result) => {
-      if (err) throw err;
-      // rows = result.rows
-      res.render("html/customer/dashboard", {
-        user: req.user.name,
-        type: req.user.type,
-        data: result.rows,
-      });
-    });
-  } else if (req.user.type == 2) {
-    pool.query(
-      `SELECT * FROM orders WHERE address = $1`,
-      [req.user.address],
-      (err, result) => {
-        if (err) throw err;
-        const eligibleOrders = result.rows.filter(
-          (order) => order.dispatchstatus == "Not Picked Up"
-        );
-        const yourOrders = result.rows.filter(
-          (order) =>
-            order.deliveryid == req.user.id &&
-            order.dispatchstatus != "Delivered"
-        );
-        res.render("html/delivery/deliverydash", {
-          user: req.user.name,
-          type: req.user.type,
-          eligibleOrders: eligibleOrders,
-          yourOrders: yourOrders,
-        });
-      }
-    );
-  } else if (req.user.type == 3) {
-    res.render("html/admin/rootdash", {
-      user: req.user.name,
-      type: req.user.type,
-    });
-  }
-});
-
+// Writing user details into when registering
 app.post("/signup", async (req, res) => {
   let { name, address, email, password, password2, type } = req.body;
 
@@ -217,6 +183,65 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Auth during log in
+app.post("/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
+
+//Routes for the pages which requires authorisation
+
+// In the dashboard route, the user type is checked from the 
+// value they have given while registering and a different page
+// is rendered for each type of user - customer, delivery and admin
+
+app.get("/dashboard", checkNotAuthenticated, (req, res) => {
+  if (req.user.type == 1) {
+    const query = `SELECT * FROM products;`;
+    pool.query(query, (err, result) => {
+      if (err) throw err;
+      // rows = result.rows
+      res.render("html/customer/dashboard", {
+        user: req.user.name,
+        type: req.user.type,
+        data: result.rows,
+      });
+    });
+  } else if (req.user.type == 2) {
+    pool.query(
+      `SELECT * FROM orders WHERE address = $1`,
+      [req.user.address],
+      (err, result) => {
+        if (err) throw err;
+        const eligibleOrders = result.rows.filter(
+          (order) => order.dispatchstatus == "Not Picked Up"
+        );
+        const yourOrders = result.rows.filter(
+          (order) =>
+            order.deliveryid == req.user.id &&
+            order.dispatchstatus != "Delivered"
+        );
+        res.render("html/delivery/deliverydash", {
+          user: req.user.name,
+          type: req.user.type,
+          eligibleOrders: eligibleOrders,
+          yourOrders: yourOrders,
+        });
+      }
+    );
+  } else if (req.user.type == 3) {
+    res.render("html/admin/rootdash", {
+      user: req.user.name,
+      type: req.user.type,
+    });
+  }
+});
+
+
+// Admin adding product
 app.post("/dashboard/createpost", (req, res) => {
   let { name, description, price, category } = req.body;
   console.log({
@@ -267,6 +292,7 @@ app.post("/dashboard/createpost", (req, res) => {
   }
 });
 
+// Admin viewing all the users
 app.get("/dashboard/viewusers", (req, res) => {
   // if(req.user.type != 3){
   //   res.redirect('/dashboard')
@@ -279,6 +305,7 @@ app.get("/dashboard/viewusers", (req, res) => {
   });
 });
 
+// Admin viewing all the products
 app.get("/dashboard/viewproducts", (req, res) => {
   // if(req.user.type != 3){
   //   res.redirect('/dashboard')
@@ -291,6 +318,7 @@ app.get("/dashboard/viewproducts", (req, res) => {
   });
 });
 
+// Admin viewing all the orders
 app.get("/dashboard/vieworders", (req, res) => {
   // if(req.user.type != 3){
   //   res.redirect('/dashboard')
@@ -303,6 +331,7 @@ app.get("/dashboard/vieworders", (req, res) => {
   });
 });
 
+// Admin updating user roles
 app.post('/dashboard/viewusers/updateuser',(req,res)=>{
   const {userid,newType} = req.body
   pool.query(`UPDATE users
@@ -314,7 +343,16 @@ app.post('/dashboard/viewusers/updateuser',(req,res)=>{
   })
 })
 
+// Admin deleting a product
+app.get('/viewproducts/delete/:id',(req,res)=>{
+  pool.query(`DELETE FROM products
+  WHERE id='${req.params.id}'`)
+  req.flash('success_message',"Successfully deleted product")
+  res.redirect('/dashboard')
+})
 
+
+// Customer viewing product
 app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
   if (req.user.type != 1) {
     res.redirect("/dashboard");
@@ -332,6 +370,7 @@ app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
   );
 });
 
+// Customer ordering product
 app.post("/dashboard/products", (req, res) => {
   let {
     qty,
@@ -363,6 +402,7 @@ app.post("/dashboard/products", (req, res) => {
   );
 });
 
+//Customer viewing their orders and its status
 app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
   if (req.user.type != 1) {
     res.redirect("/dashboard");
@@ -390,6 +430,7 @@ app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
   );
 });
 
+// Delivery person claiming an order and updating ETA as per their location
 app.post("/dashboard/deliverydash", (req, res) => {
   console.log(req.body);
   console.log(req.user.id);
@@ -405,6 +446,7 @@ app.post("/dashboard/deliverydash", (req, res) => {
   res.redirect("/dashboard/orders");
 });
 
+// Delivery person marking order as delivered
 app.post("/dashboard/delivered", (req, res) => {
   console.log(req.body.orderid);
   console.log(req.user.id);
@@ -418,28 +460,14 @@ app.post("/dashboard/delivered", (req, res) => {
   res.redirect("/dashboard/orders");
 });
 
-app.get('/viewproducts/delete/:id',(req,res)=>{
-  pool.query(`DELETE FROM products
-  WHERE id='${req.params.id}'`)
-  req.flash('success_message',"Successfully deleted product")
-  res.redirect('/dashboard')
-})
-
-app.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/dashboard",
-    failureRedirect: "/login",
-    failureFlash: true,
-  })
-);
-
+// Logging out 
 app.get("/logout", (req, res) => {
   req.logOut();
   req.flash("success_message", "You have successfully logged out");
   res.redirect("/login");
 });
 
+// Middlewares to check if user is authenticated to access a page
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/dashboard");
