@@ -115,7 +115,7 @@ app.get("/dashboard", checkNotAuthenticated, (req, res) => {
     pool.query(query, (err, result) => {
       if (err) throw err;
       // rows = result.rows
-      res.render("html/dashboard", {
+      res.render("html/customer/dashboard", {
         user: req.user.name,
         type: req.user.type,
         data: result.rows,
@@ -135,7 +135,7 @@ app.get("/dashboard", checkNotAuthenticated, (req, res) => {
             order.deliveryid == req.user.id &&
             order.dispatchstatus != "Delivered"
         );
-        res.render("html/deliverydash", {
+        res.render("html/delivery/deliverydash", {
           user: req.user.name,
           type: req.user.type,
           eligibleOrders: eligibleOrders,
@@ -327,7 +327,7 @@ app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
     (err, result) => {
       if (err) throw err;
       product = result.rows[0];
-      res.render("html/product", { product: product, user: req.user });
+      res.render("html/customer/product", { product: product, user: req.user });
     }
   );
 });
@@ -380,7 +380,7 @@ app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
       );
 
       console.log(result.rows);
-      res.render("html/orders", {
+      res.render("html/customer/orders", {
         data: result.rows,
         user: req.user,
         currentOrders: currentOrders,
