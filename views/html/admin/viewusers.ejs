@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" 
+      type="image/png" 
+      size="16x16"
+      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png">
+      <link rel="stylesheet" href="../css/style.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <title>Sprinkles</title>
+</head>
+<body style="padding: 20px;">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a href="/">
+            <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
+          </a>
+        </div>
+      
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                  <p class='subtitle is-4' style="margin-right: 20px;">Signed in as admin user <%= user.name %></p>
+                <a class="button is-danger is-large" href="/signup"> 
+                  <strong>Sign up</strong>
+                </a>
+                <a class="button is-light is-large" href='/logout'>
+                  Log out
+                </a>
+              </div>
+            </div>
+          </div>
+      </nav>
+   
+    
+    <div style="display: flex; padding:10px; width:fit-content; margin:0 auto;">
+        <a href='/dashboard' class="button is-success" style="margin:20px;">Add Product</a>
+        <a href='/dashboard/viewproducts' class="button is-success" style="margin:20px;" >View Products</a>
+        <a href='/dashboard/viewusers' class="button is-light" style="margin:20px;" disabled>View Users</a>
+        <a href='/dashboard/vieworders' class="button is-success" style="margin:20px;">View Orders</a>
+    </div>
+    
+    <ul style="list-style-type: none; width:fit-content; margin-left:auto; margin-right:auto">
+        <% if(typeof(errors) != 'undefined') { %>
+            <% errors.forEach(error=>{ %>
+                <li> <%= error.message %></li>
+            <% }) %>
+        <% } %>
+    </ul>
+
+    <ul style="list-style-type: none; width:fit-content; margin-left:auto; margin-right:auto">
+        <% if(messages.success_message) { %>
+          <li><%= messages.success_message %></li>
+        <% } %>
+    </ul>
+    <br>
+    <%= users  %>
+
+    <br>
+    
+</body>
+</html>

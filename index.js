@@ -31,7 +31,7 @@ app.use(express.static(__dirname + "/views"));
 app.set("view engine", "ejs");
 
 const usersTableQuery = `
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     address VARCHAR(100) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE users (
 );`;
 
 const productsTableQuery = `
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(100) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE products (
 );`;
 
 const ordersTableQuery = `
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
   id SERIAL PRIMARY KEY,
   productname VARCHAR(100) NOT NULL,
   quantity SMALLINT NOT NULL,
@@ -67,6 +67,7 @@ CREATE TABLE orders (
 );`;
 
 //creating users table
+
 pool
   .query(usersTableQuery)
   .then((res) => {
@@ -142,7 +143,7 @@ app.get("/dashboard", checkNotAuthenticated, (req, res) => {
       }
     );
   } else if (req.user.type == 3) {
-    res.render("html/rootdash", {
+    res.render("html/admin/rootdash", {
       user: req.user.name,
       type: req.user.type,
     });
@@ -233,7 +234,7 @@ app.post("/dashboard/createpost", (req, res) => {
     errors.push({ message: "Please enter a valid price" });
   }
   if (errors.length > 0) {
-    res.render("html/rootdash", { errors });
+    res.render("html/admin/rootdash", { errors });
   } else {
     pool.query(
       `SELECT * FROM products
@@ -245,7 +246,7 @@ app.post("/dashboard/createpost", (req, res) => {
 
         if (result.rows.length > 0) {
           errors.push({ message: "Product already added" });
-          res.render("html/rootdash", { errors });
+          res.render("html/admin/rootdash", { errors });
         } else {
           pool.query(
             `INSERT INTO products (name,description,price,category)
@@ -265,7 +266,46 @@ app.post("/dashboard/createpost", (req, res) => {
   }
 });
 
+app.get("/dashboard/viewusers", (req, res) => {
+  // if(req.user.type != 3){
+  //   res.redirect('/dashboard')
+  // }
+  pool.query(`SELECT * FROM users;`, (err, result) => {
+    res.render("html/admin/viewusers", {
+      users: result.rows,
+      user: req.user,
+    });
+  });
+});
+
+app.get("/dashboard/viewproducts", (req, res) => {
+  // if(req.user.type != 3){
+  //   res.redirect('/dashboard')
+  // }
+  pool.query(`SELECT * FROM products;`, (err, result) => {
+    res.render("html/admin/viewproducts", {
+      products: result.rows,
+      user: req.user,
+    });
+  });
+});
+
+app.get("/dashboard/vieworders", (req, res) => {
+  // if(req.user.type != 3){
+  //   res.redirect('/dashboard')
+  // }
+  pool.query(`SELECT * FROM orders;`, (err, result) => {
+    res.render("html/admin/vieworders", {
+      orders: result.rows,
+      user: req.user,
+    });
+  });
+});
+
 app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
+  if (req.user.type != 1) {
+    res.redirect("/dashboard");
+  }
   console.log(req.params.id);
   let product;
   pool.query(
@@ -311,6 +351,9 @@ app.post("/dashboard/products", (req, res) => {
 });
 
 app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
+  if (req.user.type != 1) {
+    res.redirect("/dashboard");
+  }
   pool.query(
     `SELECT * FROM orders WHERE customer = $1`,
     [req.user.name],
@@ -324,7 +367,12 @@ app.get("/dashboard/orders", checkNotAuthenticated, (req, res) => {
       );
 
       console.log(result.rows);
-      res.render("html/orders", { data: result.rows, user: req.user, currentOrders:currentOrders, pastOrders:pastOrders });
+      res.render("html/orders", {
+        data: result.rows,
+        user: req.user,
+        currentOrders: currentOrders,
+        pastOrders: pastOrders,
+      });
     }
   );
 });

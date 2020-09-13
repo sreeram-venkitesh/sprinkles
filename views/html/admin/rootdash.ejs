@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" 
+      type="image/png" 
+      size="16x16"
+      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png">
+      <link rel="stylesheet" href="../css/style.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <title>Sprinkles</title>
+</head>
+<body style="padding: 20px;">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a href="/">
+            <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
+          </a>
+        </div>
+      
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                  <p class='subtitle is-4' style="margin-right: 20px;">Signed in as admin user <%= user %></p>
+                <a class="button is-danger is-large" href="/signup"> 
+                  <strong>Sign up</strong>
+                </a>
+                <a class="button is-light is-large" href='/logout'>
+                  Log out
+                </a>
+              </div>
+            </div>
+          </div>
+      </nav>
+   
+    
+    <div style="display: flex; padding:10px; width:fit-content; margin:0 auto;">
+      <a href='/dashboard' class="button is-light" style="margin:20px;" disabled>Add Product</a>
+      <a href='/dashboard/viewproducts' class="button is-success" style="margin:20px;" >View Products</a>
+      <a href='/dashboard/viewusers' class="button is-success" style="margin:20px;">View Users</a>
+      <a href='/dashboard/vieworders' class="button is-success" style="margin:20px;">View Orders</a>
+    </div>
+    
+    <ul style="list-style-type: none; width:fit-content; margin-left:auto; margin-right:auto">
+        <% if(typeof(errors) != 'undefined') { %>
+            <% errors.forEach(error=>{ %>
+                <li> <%= error.message %></li>
+            <% }) %>
+        <% } %>
+    </ul>
+
+    <ul style="list-style-type: none; width:fit-content; margin-left:auto; margin-right:auto">
+        <% if(messages.success_message) { %>
+          <li><%= messages.success_message %></li>
+        <% } %>
+    </ul>
+    <br>
+    <p class="subtitle is-3" style="margin: 0 auto; width:fit-content;">Add a new product</p><br><br>
+    <div class="cardform" style="border: 2px; border-style:solid; border-radius:10px; width:fit-content; margin:0 auto; padding:30px;">
+        <form action="/dashboard/createpost" method="POST">
+            <input
+                type="text"
+                placeholder="Name"
+                id="name"
+                name="name"
+                style="font-size: x-large; padding:10px;"
+                required
+            /> <br><br>
+            <textarea
+                type="text"
+                placeholder="Description"
+                id="desc"
+                name="description"
+                style="font-size: x-large; padding:15px;"
+                required
+            ></textarea> <br><br>
+            <input
+                type="number"
+                step="0.01"
+                placeholder="Price"
+                id="price"
+                name="price"
+                style="font-size: x-large; padding:10px;"
+                required
+        /> <br><br>
+        <select name="category" id="category" style="font-size: x-large; padding:10px;">
+            <option value="" disabled selected>Choose type of product</option>
+            <option value="cookie">Cookie</option>
+            <option value="pastry">Pastry</option>
+            <option value="cake">Cake</option>
+        </select> <br><br>
+        <button class="button is-warning" type="submit" value='add' style="margin-left:auto; margin-right:auto; width:fit-content; padding: 10px; font-size:larger">Add product</button>
+        </form>
+    </div>
+
+    <br>
+    
+</body>
+</html>
