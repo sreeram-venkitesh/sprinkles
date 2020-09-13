@@ -56,10 +56,10 @@
         <% } %>
     </ul>
     <br>
-    <div id='productcards' style='display: block; padding:20px;'>
+    <div id='productcards' style='display:flex; flex-wrap:wrap; padding:20px;'>
         <% if(users.length != 0) { %> 
           <% users.forEach(item=>{ %>
-              <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
+              <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:45%; padding:20px; display:flex;">
                 <div style="margin: 20px;">
                     <p class="subtitle is-3" style="margin-bottom: 5px; color:#000">Name: <%= item.name %></p>
                     <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Email : <%= item.email %> </p>
@@ -73,10 +73,18 @@
                     <% } else if(item.type == 3) { %>
                         <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Account Type : Admin </p>
                     <% } %>
+                    <form action="/dashboard/viewusers/updateuser" method="POST">
+                        <select name="newType" id="newType" style="font-size: x-large; width:325px; padding:10px; margin:5px;" required>
+                            <option selected disabled>Change user account type</option>
+                              <option value="1">Customer</option>
+                              <option value="2">Delivery</option>
+                              <option value="3">Root</option>
+                          </select> <br> 
+                        <button class="button is-warning" type="submit" value='register' style="padding: 10px; font-size:larger; margin-top:10px;">Update User</button>
+                        <input type="text" style="display: none;" name="userid" value="<%= item.id  %> ">
+                    </form>
                 </div>
-                <div style="margin: 20px; display:block;">
-                  
-                </div>
+                
               </div>
           <% }) %> 
         <%} else { %>

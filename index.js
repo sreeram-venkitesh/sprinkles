@@ -303,6 +303,18 @@ app.get("/dashboard/vieworders", (req, res) => {
   });
 });
 
+app.post('/dashboard/viewusers/updateuser',(req,res)=>{
+  const {userid,newType} = req.body
+  pool.query(`UPDATE users
+  SET type=${newType}
+  WHERE id=${userid}`,(err,result)=>{
+    console.log('User updated successfully')
+    req.flash('success_message',"Succesfully updated user!")
+    res.redirect('/dashboard/viewusers')
+  })
+})
+
+
 app.get("/dashboard/products/:id", checkNotAuthenticated, (req, res) => {
   if (req.user.type != 1) {
     res.redirect("/dashboard");
@@ -402,6 +414,13 @@ app.post("/dashboard/delivered", (req, res) => {
   WHERE id='${req.body.orderid}'`);
   res.redirect("/dashboard");
 });
+
+app.get('/viewproducts/delete/:id',(req,res)=>{
+  pool.query(`DELETE FROM products
+  WHERE id='${req.params.id}'`)
+  req.flash('success_message',"Successfully deleted product")
+  res.redirect('/dashboard/viewproducts')
+})
 
 app.post(
   "/login",

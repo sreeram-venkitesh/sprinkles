@@ -61,25 +61,36 @@
     <div id='productcards' style='display: flex; padding:20px;'>
         <% if(typeof(products) != 'undefined') { %> 
           <% products.forEach(item=>{ %>
-            <a id='<%= item.id %>'  href="">
-              <div   class="card" style="border:2px; border-style:solid; border-radius:5px; margin:10px; width:250px; padding:20px;">
+              <div id="<%= item.id %>" class="card" style="border:2px; border-style:solid; border-radius:5px; margin:10px; width:250px; padding:20px;">
                 <img src="https://cdn.sallysbakingaddiction.com/wp-content/uploads/2012/08/warm-chocolate-chip-cookies.jpg" alt="cookies" width='230px' height='40px'>
                 <p class="subtitle is-4" style="margin-bottom: 5px; color:#000"><%= item.name %></p>
                 <p class="subtitle is-5" style="margin-bottom:3px; color:#333;"><%= item.category %></p>
                 <p class="subtitle is-4"> <%= item.price %> ₹ </p>
-                <a href="" class="button is-danger" style="margin-top: 10px; width:fit-content; margin-left:auto; margin-right:auto;">
+                <a class="button is-danger" style="margin-top: 10px; width:fit-content; margin-left:auto; margin-right:auto;">
                     <span>Delete</span>
                     <span class="icon is-small">
                       <i class="fas fa-times"></i>
                     </span>
                 </a>
               </div>
-            </a>
           <% }) %> 
         <% } %>
     </div>
 
     <br>
+
+    <script>
+       const products = [document.getElementById('productcards').children]
+      //console.log(products)
+      products.forEach(item=>{
+        console.log(item)
+        var it = Array.from(item)
+        console.log(it)
+        it.forEach(i=>{
+          i.children[4].href = `/viewproducts/delete/${i.id}`
+        })
+      })
+    </script>
     
 </body>
 </html>

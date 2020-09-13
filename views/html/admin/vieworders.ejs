@@ -1,87 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" 
-      type="image/png" 
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
       size="16x16"
-      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png">
-      <link rel="stylesheet" href="../css/style.css">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+      href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/google/263/doughnut_1f369.png"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    />
     <title>Sprinkles</title>
-</head>
-<body style="padding: 20px;">
+  </head>
+  <body style="padding: 20px">
     <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-          <a href="/">
-            <img src="https://i.imgur.com/IquhhWY.png" style="width: 400px; height:auto;">
-          </a>
-        </div>
-      
-          <div class="navbar-end">
-            <div class="navbar-item">
-              <div class="buttons">
-                  <p class='subtitle is-4' style="margin-right: 20px;">Signed in as admin user <%= user.name %></p>
-                <a class="button is-danger is-large" href="/signup"> 
-                  <strong>Sign up</strong>
-                </a>
-                <a class="button is-light is-large" href='/logout'>
-                  Log out
-                </a>
-              </div>
-            </div>
+      <div class="navbar-brand">
+        <a href="/">
+          <img
+            src="https://i.imgur.com/IquhhWY.png"
+            style="width: 400px; height: auto"
+          />
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <p class="subtitle is-4" style="margin-right: 20px">
+              Signed in as admin user <%= user.name %>
+            </p>
+            <a class="button is-danger is-large" href="/signup">
+              <strong>Sign up</strong>
+            </a>
+            <a class="button is-light is-large" href="/logout"> Log out </a>
           </div>
-      </nav>
-   
-    
-    <div style="display: flex; padding:10px; width:fit-content; margin:0 auto;">
-        <a href='/dashboard' class="button is-success" style="margin:20px;">Add Product</a>
-        <a href='/dashboard/viewproducts' class="button is-success" style="margin:20px;">View Products</a>
-        <a href='/dashboard/viewusers' class="button is-success" style="margin:20px;">View Users</a>
-        <a href='/dashboard/vieworders' class="button is-light" style="margin:20px;" disabled>View Orders</a>
-    </div>
-    
-    <ul style="list-style-type: none; width:fit-content; margin-left:auto; margin-right:auto">
-        <% if(typeof(errors) != 'undefined') { %>
-            <% errors.forEach(error=>{ %>
-                <li> <%= error.message %></li>
-            <% }) %>
-        <% } %>
-    </ul>
+        </div>
+      </div>
+    </nav>
 
-    <ul style="list-style-type: none; width:fit-content; margin-left:auto; margin-right:auto">
-        <% if(messages.success_message) { %>
-          <li><%= messages.success_message %></li>
-        <% } %>
-    </ul>
-    <br>
-    <div id='productcards' style='display: block; padding:20px;'>
-        <% if(orders.length != 0) { %> 
-          <% orders.forEach(item=>{ %>
-              <div class="deliverycard" style="border:2px; border-style:solid; border-radius:5px; margin:20px auto; width:90%; padding:20px; display:flex;">
-                <div style="margin: 20px;">
-                    <p class="subtitle is-3" style="margin-bottom: 5px; color:#000"><%= item.productname %></p>
-                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Quantity : <%= item.quantity %> </p>
-                    <p class="subtitle is-5" style="margin-bottom:3px; color:#333;">Total Price : <%= item.productprice %> x <%= item.quantity %> = <%= item.total %> ₹ </p>
-                </div>
-                <div style="margin: 20px;">
-                    <p id='deliverystatus' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery status : <%= item.dispatchstatus  %> </p>
-                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Customer : <%= item.customer  %> </p>
-                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Delivery : <%= item.deliveryname  %> </p>
-                    <p id='eta' class="subtitle is-5" style="margin-bottom:3px; color:#333;"> Recieved :  <%= item.deliveredstatus %>  </p>
-                </div>
-                <div style="margin: 20px; display:block;">
-                  
-                </div>
-              </div>
-          <% }) %> 
-        <%} else { %>
-            <p class="subtitle is-2" style="margin-left:30px ;">There are no unclaimed orders near your location!</p>
-        <% } %>
+    <div
+      style="display: flex; padding: 10px; width: fit-content; margin: 0 auto"
+    >
+      <a href="/dashboard" class="button is-success" style="margin: 20px"
+        >Add Product</a
+      >
+      <a
+        href="/dashboard/viewproducts"
+        class="button is-success"
+        style="margin: 20px"
+        >View Products</a
+      >
+      <a
+        href="/dashboard/viewusers"
+        class="button is-success"
+        style="margin: 20px"
+        >View Users</a
+      >
+      <a
+        href="/dashboard/vieworders"
+        class="button is-light"
+        style="margin: 20px"
+        disabled
+        >View Orders</a
+      >
     </div>
 
-    <br>
-    
-</body>
+    <ul
+      style="
+        list-style-type: none;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+      "
+    >
+      <% if(typeof(errors) != 'undefined') { %> <% errors.forEach(error=>{ %>
+      <li><%= error.message %></li>
+      <% }) %> <% } %>
+    </ul>
+
+    <ul
+      style="
+        list-style-type: none;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+      "
+    >
+      <% if(messages.success_message) { %>
+      <li><%= messages.success_message %></li>
+      <% } %>
+    </ul>
+    <br />
+    <div id="productcards" style="display: flex; padding: 20px">
+      <% if(orders.length != 0) { %> <% orders.forEach(item=>{ %>
+      <div
+        class="deliverycard"
+        style="
+          border: 2px;
+          border-style: solid;
+          border-radius: 5px;
+          margin: 20px;
+          width: fit-content;
+          padding: 20px;
+          display: flex;
+        "
+      >
+        <div style="margin: 20px">
+          <p class="subtitle is-3" style="margin-bottom: 5px; color: #000">
+            <%= item.productname %>
+          </p>
+          <p class="subtitle is-5" style="margin-bottom: 3px; color: #333">
+            Quantity : <%= item.quantity %>
+          </p>
+          <p class="subtitle is-5" style="margin-bottom: 3px; color: #333">
+            Total Price : <%= item.productprice %> x <%= item.quantity %> = <%=
+            item.total %> ₹
+          </p>
+        </div>
+        <div style="margin: 20px">
+          <p
+            id="deliverystatus"
+            class="subtitle is-5"
+            style="margin-bottom: 3px; color: #333"
+          >
+            Delivery status : <%= item.dispatchstatus %>
+          </p>
+          <p
+            id="eta"
+            class="subtitle is-5"
+            style="margin-bottom: 3px; color: #333"
+          >
+            Customer : <%= item.customer %>
+          </p>
+          <p
+            id="eta"
+            class="subtitle is-5"
+            style="margin-bottom: 3px; color: #333"
+          >
+            Delivery : <%= item.deliveryname %>
+          </p>
+          <p
+            id="eta"
+            class="subtitle is-5"
+            style="margin-bottom: 3px; color: #333"
+          >
+            ETA : <%= item.eta %> hrs
+          </p>
+          <p
+            id="eta"
+            class="subtitle is-5"
+            style="margin-bottom: 3px; color: #333"
+          >
+            Recieved : <%= item.deliveredstatus %>
+          </p>
+        </div>
+        <div style="margin: 20px; display: block"></div>
+      </div>
+      <% }) %> <%} else { %>
+      <p class="subtitle is-2" style="margin-left: 30px">
+        There are no unclaimed orders near your location!
+      </p>
+      <% } %>
+    </div>
+
+    <br />
+  </body>
 </html>
