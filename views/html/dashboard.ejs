@@ -48,7 +48,7 @@
     </ul>
     <br>
     <div id='productcards' style='display: flex; padding:20px;'>
-        <% if(typeof(data) != 'undefined') { %> 
+        <% if(data.length > 0) { %> 
           <% data.forEach(item=>{ %>
             <a id='<%= item.id %>'  href="">
               <div   class="card" style="border:2px; border-style:solid; border-radius:5px; margin:10px; width:250px; padding:20px;">
@@ -59,7 +59,11 @@
               </div>
             </a>
           <% }) %> 
-        <% } %>
+          <%} else { %>
+            <p class="subtitle is-2" style="margin-left: auto; margin-right:auto;">
+              There are no products added yet :(
+            </p>
+            <% } %>
     </div>
 
 

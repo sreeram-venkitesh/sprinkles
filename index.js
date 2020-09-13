@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS orders (
   deliveryName VARCHAR(20) DEFAULT NULL,
   dispatchStatus VARCHAR(20) DEFAULT 'Not Picked Up',
   deliveredStatus BOOLEAN DEFAULT FALSE,
-  eta VARCHAR(20) DEFAULT '2 HOURS'
+  eta VARCHAR(20) DEFAULT '2'
 );`;
 
 //creating users table
@@ -91,7 +91,7 @@ pool
 pool
   .query(ordersTableQuery)
   .then((res) => {
-    console.log("Products table successfully created");
+    console.log("Orders table successfully created");
   })
   .catch((err) => {
     console.error(err);
@@ -401,7 +401,8 @@ app.post("/dashboard/deliverydash", (req, res) => {
   eta='${req.body.eta}'
   WHERE id='${req.body.orderid}'
   RETURNING id;`);
-  res.redirect("/dashboard");
+  req.flash('success_message','Successfully claimed order')
+  res.redirect("/dashboard/orders");
 });
 
 app.post("/dashboard/delivered", (req, res) => {
@@ -412,14 +413,16 @@ app.post("/dashboard/delivered", (req, res) => {
   SET dispatchstatus='Delivered',
   deliveredstatus='TRUE'
   WHERE id='${req.body.orderid}'`);
-  res.redirect("/dashboard");
+  req.flash('success_message','Successfully delivered order')
+
+  res.redirect("/dashboard/orders");
 });
 
 app.get('/viewproducts/delete/:id',(req,res)=>{
   pool.query(`DELETE FROM products
   WHERE id='${req.params.id}'`)
   req.flash('success_message',"Successfully deleted product")
-  res.redirect('/dashboard/viewproducts')
+  res.redirect('/dashboard')
 })
 
 app.post(

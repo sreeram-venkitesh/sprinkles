@@ -25,9 +25,6 @@
             <div class="navbar-item">
               <div class="buttons">
                   <p class='subtitle is-4' style="margin-right: 20px;">Signed in as admin user <%= user.name %></p>
-                <a class="button is-danger is-large" href="/signup"> 
-                  <strong>Sign up</strong>
-                </a>
                 <a class="button is-light is-large" href='/logout'>
                   Log out
                 </a>
@@ -59,7 +56,7 @@
     </ul>
     <br>
     <div id='productcards' style='display: flex; padding:20px;'>
-        <% if(typeof(products) != 'undefined') { %> 
+        <% if(products.length > 0) { %> 
           <% products.forEach(item=>{ %>
               <div id="<%= item.id %>" class="card" style="border:2px; border-style:solid; border-radius:5px; margin:10px; width:250px; padding:20px;">
                 <img src="https://cdn.sallysbakingaddiction.com/wp-content/uploads/2012/08/warm-chocolate-chip-cookies.jpg" alt="cookies" width='230px' height='40px'>
@@ -74,7 +71,12 @@
                 </a>
               </div>
           <% }) %> 
-        <% } %>
+          <%} else { %>
+            <p class="subtitle is-2" style="margin-left: auto; margin-right:auto;">
+              There are no products added yet :(
+            </p>
+            <% } %>
+
     </div>
 
     <br>

@@ -33,9 +33,6 @@
             <p class="subtitle is-4" style="margin-right: 20px">
               Signed in as admin user <%= user.name %>
             </p>
-            <a class="button is-danger is-large" href="/signup">
-              <strong>Sign up</strong>
-            </a>
             <a class="button is-light is-large" href="/logout"> Log out </a>
           </div>
         </div>
@@ -95,7 +92,7 @@
       <% } %>
     </ul>
     <br />
-    <div id="productcards" style="display: flex; padding: 20px">
+    <div id="productcards" style="display: flex; flex-wrap:wrap; padding: 20px">
       <% if(orders.length != 0) { %> <% orders.forEach(item=>{ %>
       <div
         class="deliverycard"
@@ -103,8 +100,8 @@
           border: 2px;
           border-style: solid;
           border-radius: 5px;
-          margin: 20px;
-          width: fit-content;
+          margin: 20px auto;
+          width: 45%;
           padding: 20px;
           display: flex;
         "
@@ -161,8 +158,8 @@
         <div style="margin: 20px; display: block"></div>
       </div>
       <% }) %> <%} else { %>
-      <p class="subtitle is-2" style="margin-left: 30px">
-        There are no unclaimed orders near your location!
+      <p class="subtitle is-2" style="margin-left: auto; margin-right:auto;">
+        There are no orders yet :(
       </p>
       <% } %>
     </div>
